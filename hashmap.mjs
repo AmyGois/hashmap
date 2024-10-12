@@ -1,21 +1,19 @@
 import LinkedList from "./linked-list.mjs";
 
-class HashMap {
+export default class HashMap {
   constructor() {
     this.buckets = Array(16);
     this.numberOfEntries = 0;
+    this.loadFactor = 0.8;
   }
 
   #hash(key) {
     let hashCode = 0;
     const primeNumber = 31;
-    let seed = 1;
 
     for (let i = 0; i < key.length; i++) {
       hashCode =
-        ((primeNumber + seed) * hashCode + key.charCodeAt(i)) %
-        this.buckets.length;
-      seed = seed + 2;
+        (primeNumber * hashCode + key.charCodeAt(i)) % this.buckets.length;
     }
 
     return hashCode;
@@ -32,6 +30,7 @@ class HashMap {
     while (currentNode !== null) {
       if (currentNode.value[key]) {
         currentNode.value[key] = value;
+        this.numberOfEntries--;
         return;
       }
       currentNode = currentNode.nextNode;
@@ -41,9 +40,7 @@ class HashMap {
   }
 
   #growBuckets() {
-    const loadFactor = 0.8;
-
-    if (this.numberOfEntries >= this.buckets.length * loadFactor) {
+    if (this.numberOfEntries > this.buckets.length * this.loadFactor) {
       const oldBuckets = this.buckets;
 
       this.buckets = Array(this.buckets.length * 2);
@@ -114,7 +111,7 @@ class HashMap {
       while (currentNode !== null) {
         if (currentNode.value[key]) {
           this.buckets[index].removeAt(currentIndex);
-          console.log(this.buckets[index]);
+          this.numberOfEntries--;
           return true;
         }
         currentNode = currentNode.nextNode;
@@ -130,7 +127,8 @@ class HashMap {
   }
 
   clear() {
-    this.buckets = Array(this.buckets.length);
+    this.buckets = Array(16);
+    this.numberOfEntries = 0;
   }
 
   keys() {
@@ -193,20 +191,12 @@ class HashMap {
 
     return allEntries;
   }
-}
 
-const test = new HashMap();
-test.set("Hello", "World");
-/* test.set("Hello", "Again world"); */
-test.set("olleH", "dlroW");
-test.set("lloHe", "World");
-test.set("eHoll", "World");
-test.set("Hi", "there!");
-console.log(test);
-/* console.log(test.buckets[0]);
-console.log(test.buckets[9]);
-console.log(test.buckets[9].headNode.nextNode);
-console.log(test.buckets[15]);
-console.log(test.buckets[15].headNode.nextNode); */
-/* console.log(test.get("Hello")); */
-/* console.log(test.length()); */
+  setLoadFactor(newFactor) {
+    if (newFactor == NaN || newFactor > 1 || newFactor < 0.75) {
+      throw new Error("Load factor must be between 0.75 and 1");
+    } else {
+      this.loadFactor = newFactor;
+    }
+  }
+}
