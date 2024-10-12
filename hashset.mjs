@@ -1,6 +1,6 @@
 import LinkedList from "./linked-list.mjs";
 
-export default class HashMap {
+export default class HashSet {
   constructor() {
     this.buckets = Array(16);
     this.numberOfEntries = 0;
@@ -19,7 +19,7 @@ export default class HashMap {
     return hashCode;
   }
 
-  #addToMap(key, value) {
+  #addToMap(key) {
     const index = this.#hash(key);
 
     if (this.buckets[index] === undefined) {
@@ -28,14 +28,13 @@ export default class HashMap {
     let currentNode = this.buckets[index].headNode;
 
     while (currentNode !== null) {
-      if (currentNode.value[key]) {
-        currentNode.value[key] = value;
+      if (currentNode.value === key) {
         return;
       }
       currentNode = currentNode.nextNode;
     }
 
-    this.buckets[index].append({ [key]: value });
+    this.buckets[index].append(key);
     this.numberOfEntries++;
   }
 
@@ -51,10 +50,7 @@ export default class HashMap {
           let currentNode = oldBuckets[i].headNode;
 
           while (currentNode !== null) {
-            this.#addToMap(
-              Object.keys(currentNode.value)[0],
-              Object.values(currentNode.value)[0]
-            );
+            this.#addToMap(currentNode.value);
             currentNode = currentNode.nextNode;
           }
         }
@@ -62,8 +58,8 @@ export default class HashMap {
     }
   }
 
-  set(key, value) {
-    this.#addToMap(key, value);
+  set(key) {
+    this.#addToMap(key);
     this.#growBuckets();
   }
 
@@ -74,8 +70,8 @@ export default class HashMap {
       let currentNode = this.buckets[index].headNode;
 
       while (currentNode !== null) {
-        if (currentNode.value[key]) {
-          return currentNode.value[key];
+        if (currentNode.value === key) {
+          return currentNode.value;
         }
         currentNode = currentNode.nextNode;
       }
@@ -91,7 +87,7 @@ export default class HashMap {
       let currentNode = this.buckets[index].headNode;
 
       while (currentNode !== null) {
-        if (currentNode.value[key]) {
+        if (currentNode.value === key) {
           return true;
         }
         currentNode = currentNode.nextNode;
@@ -109,7 +105,7 @@ export default class HashMap {
       let currentIndex = 0;
 
       while (currentNode !== null) {
-        if (currentNode.value[key]) {
+        if (currentNode.value === key) {
           this.buckets[index].removeAt(currentIndex);
           this.numberOfEntries--;
           return true;
@@ -140,7 +136,7 @@ export default class HashMap {
 
         while (currentNode !== null) {
           if (currentNode.value !== null) {
-            allKeys.push(Object.keys(currentNode.value)[0]);
+            allKeys.push(currentNode.value);
           }
           currentNode = currentNode.nextNode;
         }
@@ -148,48 +144,6 @@ export default class HashMap {
     }
 
     return allKeys;
-  }
-
-  values() {
-    const allValues = [];
-
-    for (let i = 0; i < this.buckets.length; i++) {
-      if (this.buckets[i] !== undefined) {
-        let currentNode = this.buckets[i].headNode;
-
-        while (currentNode !== null) {
-          if (currentNode.value !== null) {
-            allValues.push(Object.values(currentNode.value)[0]);
-          }
-          currentNode = currentNode.nextNode;
-        }
-      }
-    }
-
-    return allValues;
-  }
-
-  entries() {
-    const allEntries = [];
-
-    for (let i = 0; i < this.buckets.length; i++) {
-      if (this.buckets[i] !== undefined) {
-        let currentNode = this.buckets[i].headNode;
-
-        while (currentNode !== null) {
-          if (currentNode.value !== null) {
-            let newEntry = [];
-
-            newEntry.push(Object.keys(currentNode.value)[0]);
-            newEntry.push(Object.values(currentNode.value)[0]);
-            allEntries.push(newEntry);
-          }
-          currentNode = currentNode.nextNode;
-        }
-      }
-    }
-
-    return allEntries;
   }
 
   setLoadFactor(newFactor) {
