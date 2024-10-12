@@ -4,7 +4,7 @@ import HashSet from "./hashset.mjs";
 /* Test HashMap class */
 const test = new HashMap();
 
-/* test.setLoadFactor(0.75);
+test.setLoadFactor(0.75);
 
 console.log("Set initial values");
 test.set("apple", "red");
@@ -55,7 +55,7 @@ console.log(test.length());
 console.log(test.keys());
 console.log(test.values());
 test.clear();
-console.log(test); */
+console.log(test);
 
 /* Test HashSet class */
 
